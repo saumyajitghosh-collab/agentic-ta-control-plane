@@ -17,6 +17,14 @@ The Settings screen lets you paste an Anthropic API key so the Ops workstation c
 - Because the call is made from the browser, the key is present in that page's context. Treat it like any other credential: use a scoped, disposable key, avoid shared or public machines, and revoke it afterwards. For anything beyond a demo, proxy model calls through a server so the key never reaches the client.
 - With no key set, every agent runs on deterministic reasoning and the whole product still works. The Story always runs deterministically.
 
+## Payments
+
+The site takes no card data and holds no payment secrets. There is no backend.
+
+- **UPI.** The pricing page shows a UPI ID and a `upi://pay` deep link. The ID is public by design.
+- **Razorpay.** The static site only links to a Razorpay Payment Link/Page. The full checkout that verifies signatures lives in `server/razorpay-verify.js`, which reads `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and `RAZORPAY_WEBHOOK_SECRET` from the environment. No key or secret is ever committed; if one appears in this repo, rotate it and remove it from history.
+- **The entitlement gate is client-side** (`src/app/entitlements.js`) and can be bypassed. It is a free/paid signal and a deterrent, not access control. Do not treat it as one.
+
 ## Controls the project demonstrates
 
 The security story of the product is its own subject matter: untrusted content (documents, emails, distributor files) can supply **facts** but never **authority**. Any action implied by text inside such content is proposed with `origin: UNTRUSTED_CONTENT` and refused by rule `R-UNTRUSTED-ORIGIN`, regardless of what a detector noticed. See [`docs/CONTROLS.md`](docs/CONTROLS.md) and the Trust boundary screen.

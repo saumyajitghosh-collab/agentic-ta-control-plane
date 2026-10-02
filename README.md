@@ -41,6 +41,7 @@ This project shows that layer:
 | **Evidence and replay** | Verify the chain, replay every decision, simulate an after-the-fact edit and watch verification fail. |
 | **Cross-TA oversight** | Normalised provider scorecards by complexity cohort, findings, downloadable oversight pack. |
 | **Compliance map** | Where each expectation (Singapore agentic AI framework, EU AI Act, DORA, SEBI AI/ML reporting, prompt-injection risk) is met, plus a draft AI/ML application register. |
+| **Pricing** | Free vs Operator, what each unlocks, and payment by UPI (India) or Razorpay (card + UPI, worldwide). |
 
 Switch the **Acting as** role (Operations, Compliance, Fund board / ManCo, Distribution, Auditor) to see entitlements change what you can do.
 
@@ -51,6 +52,23 @@ The Story follows one investor end to end; the Control plane is where policy, au
 | Story: one investor, one unbroken audit trail | Control plane: policy sandbox and autonomy |
 | --- | --- |
 | ![Story view](assets/screenshot-story.jpg) | ![Control plane](assets/screenshot-control.jpg) |
+
+## Pricing
+
+The demo is free to explore; running it is the **Operator** tier.
+
+| | Free | Operator |
+| --- | --- | --- |
+| Story, Ops workstation, federated register, liquidity & gates | yes | yes |
+| Trust boundary, evidence & replay, oversight, compliance map, policy sandbox | yes | yes |
+| Run agents on the queue, decide real cases, governance changes | — | yes |
+| Exports (policy pack, ledger, oversight pack, AI/ML register), bring-your-own-model | — | yes |
+
+**₹2,999 / month** or **₹29,999 / year**. The first 30 days of Operator are free, tied to the device.
+
+Pay by **UPI** in India, or **Razorpay** — one checkout that takes UPI and international cards, so it works outside India too. UPI alone will not serve overseas buyers.
+
+The gate is client-side: it makes the free/paid line explicit and filters casual users, but it is not a security boundary. Payment cannot be verified without a server. See [docs/BILLING.md](docs/BILLING.md) for the Razorpay path that does it properly, and `server/razorpay-verify.js` for the reference backend.
 
 ## The policy model
 
@@ -140,6 +158,7 @@ The app is static and served from the repository root.
 - **ISO 20022.** Messages follow ISO 20022 element naming for setr, acmt and sese, are built deterministically and pass structural and semantic checks, but are not validated against the official XSDs, which are not bundled. Versions are indicative.
 - **Regulatory mappings** are illustrative design aids, not legal advice. Check current texts and timetables before relying on any of them.
 - **Client-side only.** This edition demonstrates the control model in the browser. A production deployment would split propose and execute into separate services, hold write credentials only in the executor, and add identity, persistence and real provider adapters.
+- **The paywall is client-side.** Free vs Operator is enforced in the browser and can be bypassed; payment is not verified without a server. See [docs/BILLING.md](docs/BILLING.md).
 
 ## Roadmap
 

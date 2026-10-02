@@ -4,6 +4,7 @@
   const T = window.TACP;
   const E = T.esc;
   const A = T.analytics;
+  const ENT = window.TACP_ENT;
   const byId = A.byId;
 
   const VIEWS = [
@@ -17,7 +18,8 @@
     { id: 'evidence', label: 'Evidence and replay', group: 'Prove' },
     { id: 'oversight', label: 'Cross-TA oversight', group: 'Prove' },
     { id: 'compliance', label: 'Compliance map', group: 'Prove' },
-    { id: 'settings', label: 'Settings', group: 'Settings' }
+    { id: 'settings', label: 'Settings', group: 'Settings' },
+    { id: 'pricing', label: 'Pricing', group: 'Settings' }
   ];
 
   const state = {
@@ -496,7 +498,7 @@
     let html;
     try { html = view(); } catch (err) { html = '<div class="panel"><h3>Something went wrong rendering this view</h3><p class="small">' + E(err.message) + '</p>' + btn('Reset the demo', 'reset', {}) + '</div>'; console.error(err); }
     root.innerHTML = '<div class="app"><aside class="side"><div class="brand"><div class="brand-name">TA Control Plane</div><div class="brand-sub">Manager-owned data, decisions and automation across every transfer agent</div></div><nav class="nav" aria-label="Sections">' + groups + '</nav></aside>' +
-      '<div class="main"><div class="topbar"><div><b>TA Control Plane</b> <span class="small muted">synthetic data</span></div><span class="spacer"></span><label>Acting as <select data-change="role">' + roles + '</select></label>' +
+      '<div class="main"><div class="topbar"><div><b>TA Control Plane</b> <span class="small muted">synthetic data</span></div><span class="spacer"></span>' + planChip() + '<label>Acting as <select data-change="role">' + roles + '</select></label>' +
       '<span class="chain"><span class="dot' + (v.ok ? '' : ' bad') + '"></span>' + (v.ok ? 'Evidence chain intact (' + v.count + ')' : 'Evidence chain broken') + '</span></div>' +
       '<nav class="mobile-nav" aria-label="Sections">' + VIEWS.map((x) => '<button data-act="nav" data-view="' + x.id + '"' + (x.id === state.view ? ' aria-current="page"' : '') + '>' + E(x.label) + '</button>').join('') + '</nav>' +
       '<main class="content">' + html + '</main></div></div>' +
@@ -513,7 +515,10 @@
       setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     } catch (e) { toast('Download is not available here.'); }
   }
-  function go(view) { state.view = view; if (location.hash !== '#/' + view) history.replaceState(null, '', '#/' + view); render(); window.scrollTo(0, 0); }
+  function go(view) {
+    if (view === 'pricing') { window.location.href = 'pricing.html'; return; }
+    state.view = view; if (location.hash !== '#/' + view) history.replaceState(null, '', '#/' + view); render(); window.scrollTo(0, 0);
+  }
 
   async function claudeRationale(proposal, c) {
     const r = state.reasoner;
@@ -541,6 +546,21 @@
       try { p = await claudeRationale(p, cp.getCase(id)); } catch (e) { toast('Claude unavailable (' + e.message + '). Used deterministic reasoning.'); }
     }
     cp.gate(id, p);
+  }
+
+  // ---------- entitlements (free vs Operator) ----------
+  function isStoryCase(id) { try { return !!state.cp.getCase(id).story; } catch (e) { return false; } }
+  function planChip() {
+    const s = ENT.state();
+    const label = s.owner ? 'Owner' : s.plan === 'operator' ? 'Operator' : s.trial ? 'Trial \u00b7 ' + s.daysLeft + 'd' : 'Free';
+    return '<button class="btn-link" data-act="nav" data-view="pricing" title="' + E(ENT.freeLine + ' ' + ENT.paidLine) + '">' + chip(label, s.entitled ? 'auth' : 'human') + '</button>';
+  }
+  function showUpsell() {
+    state.modal = { title: 'Operator feature', body:
+      '<p class="small">' + E(ENT.freeLine) + '</p><p class="small">' + E(ENT.paidLine) + '</p>' +
+      '<p class="small muted">The first 30 days of Operator are free on this device; after that the free tier stays open.</p>' +
+      '<div class="row"><a class="btn btn-primary" href="pricing.html">See plans and pricing</a>' + btn('Not now', 'close-modal', {}) + '</div>' };
+    render();
   }
 
   // ---------- actions ----------
@@ -641,20 +661,25 @@
     const fn = ACT[el.dataset.act];
     if (!fn) return;
     if (el.dataset.act === 'close-modal' && el.classList.contains('modal-back') && ev.target !== el) return;
+    const g = ENT.gate(el.dataset.act, { storyCase: el.dataset.act === 'decide' ? isStoryCase(el.dataset.case) : false });
+    if (!g.allowed) { showUpsell(); return; }
     Promise.resolve(fn(el.dataset, el, ev)).catch((e) => { console.error(e); toast(e.message); });
   });
   document.addEventListener('change', (ev) => {
     const el = ev.target.closest('[data-change]');
     if (!el) return;
     const fn = CHANGE[el.dataset.change];
-    if (fn) fn(el.value, el);
+    if (!fn) return;
+    if (ENT.isPremiumChange(el.dataset.change) && !ENT.entitled()) { showUpsell(); return; }
+    fn(el.value, el);
   });
   document.addEventListener('keydown', (ev) => { if (ev.key === 'Escape' && state.modal) { state.modal = null; render(); } });
-  window.addEventListener('hashchange', () => { const v = location.hash.replace('#/', ''); if (VIEWS.some((x) => x.id === v) && v !== state.view) { state.view = v; render(); } });
+  window.addEventListener('hashchange', () => { const v = location.hash.replace('#/', ''); if (v === 'pricing') { window.location.href = 'pricing.html'; return; } if (VIEWS.some((x) => x.id === v) && v !== state.view) { state.view = v; render(); } });
 
   reset();
   const initial = location.hash.replace('#/', '');
-  if (VIEWS.some((x) => x.id === initial)) state.view = initial;
+  if (initial === 'pricing') { window.location.href = 'pricing.html'; }
+  else if (VIEWS.some((x) => x.id === initial)) state.view = initial;
   render();
   window.TACP_APP = { state, render, reset };
 })();

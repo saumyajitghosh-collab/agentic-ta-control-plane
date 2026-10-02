@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pricing — Agentic TA Control Plane</title>
+  <meta name="description" content="Free to explore the control model. Operator tier to run it: agents on your own cases, governance changes, exports and bring-your-own-model.">
+  <meta name="theme-color" content="#0f1726">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%82%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--paper:#f3f5f7;--surface:#fff;--ink:#14213d;--ink-2:#4a5568;--ink-3:#718096;--rule:#d9dee5;
+      --agent:#2f5bd3;--agent-tint:#e8eefc;--auth:#1f7a5c;--auth-tint:#e3f2ec;--human:#a8680f;--human-tint:#fbf0dc;
+      --dark:#0f1726;--dark-2:#162033;--dark-rule:#2b3a55;--dark-ink:#e7ecf4;--dark-muted:#8d99ad;
+      --sans:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--sans);background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+    a{color:var(--agent)}
+    .top{background:var(--dark);color:var(--dark-ink);padding:18px 24px;display:flex;align-items:center;gap:14px}
+    .top .b{font-weight:600;letter-spacing:.01em}
+    .top .s{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#7d9cf0}
+    .top .sp{flex:1}
+    .top a{color:#7d9cf0;text-decoration:none;font-size:13.5px}
+    .top a:hover{text-decoration:underline}
+    .wrap{max-width:980px;margin:0 auto;padding:40px 24px 72px}
+    h1{font-size:34px;letter-spacing:-.01em;margin-bottom:8px}
+    .lede{color:var(--ink-2);font-size:16px;max-width:680px}
+    .status{margin:18px 0 0;padding:12px 16px;border-radius:8px;font-size:14px;border:1px solid var(--rule);background:var(--surface)}
+    .status.ok{border-color:#b7ddc9;background:var(--auth-tint);color:#175c46}
+    .status.trial{border-color:#e8d3a6;background:var(--human-tint);color:#7a4d0a}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+    @media(max-width:760px){.grid{grid-template-columns:1fr}}
+    .col{border:1px solid var(--rule);border-radius:12px;background:var(--surface);padding:22px}
+    .col h2{font-size:17px;margin-bottom:4px}
+    .col .who{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:14px}
+    .col ul{list-style:none}
+    .col li{position:relative;padding-left:22px;margin:7px 0;font-size:14.5px;color:var(--ink-2)}
+    .col li:before{content:"";position:absolute;left:0;top:9px;width:9px;height:9px;border-radius:50%;background:var(--rule)}
+    .col.free li:before{background:#9fb0c4}
+    .col.paid li:before{background:var(--auth)}
+    .plans{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:26px}
+    @media(max-width:760px){.plans{grid-template-columns:1fr}}
+    .plan{border:1.5px solid var(--rule);border-radius:12px;background:var(--surface);padding:20px;position:relative;cursor:pointer;transition:.15s}
+    .plan:hover{border-color:#9fb0c4}
+    .plan.sel{border-color:var(--agent);box-shadow:0 0 0 3px var(--agent-tint)}
+    .plan .nm{font-weight:600;font-size:16px}
+    .plan .pr{font-size:28px;margin:6px 0 2px;letter-spacing:-.02em}
+    .plan .pr small{font-size:13px;color:var(--ink-3);font-weight:400}
+    .plan .nt{font-size:13px;color:var(--ink-3)}
+    .plan .bd{position:absolute;top:-10px;right:14px;background:var(--auth);color:#fff;font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 9px;border-radius:4px}
+    h3.sec{font-size:15px;margin:38px 0 4px;font-family:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:600}
+    .pay{border:1px solid var(--rule);border-radius:12px;background:var(--surface);padding:22px;margin-top:12px}
+    .pay h4{font-size:15px;margin-bottom:10px}
+    .upi{display:flex;justify-content:space-between;align-items:center;gap:12px;font-family:var(--mono);font-size:14px;
+      background:var(--agent-tint);border:1px dashed #a9bff0;border-radius:8px;padding:11px 14px;cursor:pointer}
+    .upi:hover{border-style:solid}
+    .upi .hint{font-size:11.5px;color:var(--agent);font-family:var(--sans)}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .btn{border:0;border-radius:8px;padding:11px 18px;font-family:var(--sans);font-size:14.5px;font-weight:600;cursor:pointer;
+      background:var(--agent);color:#fff;text-decoration:none;display:inline-block}
+    .btn:hover{filter:brightness(1.06)}
+    .btn.ghost{background:transparent;color:var(--agent);border:1px solid var(--rule)}
+    .btn[aria-disabled="true"]{opacity:.5;pointer-events:none}
+    label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin:16px 0 6px}
+    input{width:100%;border:1px solid var(--rule);border-radius:8px;padding:11px 13px;font-family:var(--sans);font-size:14.5px;background:#fff;color:var(--ink)}
+    input:focus{outline:none;border-color:var(--agent);box-shadow:0 0 0 3px var(--agent-tint)}
+    .msg{margin-top:14px;padding:11px 14px;border-radius:8px;font-size:14px;display:none}
+    .msg.err{display:block;background:#f8e4e4;border:1px solid #e6b3b3;color:#8f2f2f}
+    .msg.ok{display:block;background:var(--auth-tint);border:1px solid #b7ddc9;color:#175c46}
+    .note{font-size:13px;color:var(--ink-3);margin-top:14px;line-height:1.7}
+    .mono{font-family:var(--mono)}
+    footer{margin-top:44px;padding-top:20px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3)}
+  </style>
+</head>
+<body>
+  <div class="top">
+    <span class="b">TA Control Plane</span><span class="s">Pricing</span>
+    <span class="sp"></span>
+    <a href="index.html">&larr; Back to the demo</a>
+  </div>
+
+  <div class="wrap">
+    <h1>Free to explore. Operator to run it.</h1>
+    <p class="lede">The whole control model is open on synthetic data. When you want to run agents on your own
+      cases, change governance, export the evidence or bring your own model, that is the Operator tier.</p>
+
+    <div id="status"></div>
+
+    <div class="grid">
+      <div class="col free">
+        <h2>Free</h2>
+        <div class="who">Explore the model</div>
+        <ul>
+          <li>The seven-step Story, end to end</li>
+          <li>Ops workstation, federated register, liquidity &amp; gates</li>
+          <li>Trust boundary and the injection suite</li>
+          <li>Evidence and replay, cross-TA oversight, compliance map</li>
+          <li>The policy sandbox (dry-run proposals)</li>
+        </ul>
+      </div>
+      <div class="col paid">
+        <h2>Operator</h2>
+        <div class="who">Run it</div>
+        <ul>
+          <li>Run agents on the operational queue and decide real cases</li>
+          <li>Change autonomy dials, kill switches and confidence &alpha;</li>
+          <li>Shadow-mode promotion of a process</li>
+          <li>Export the policy pack, evidence ledger, oversight pack, AI/ML register</li>
+          <li>Bring your own model (Claude) for proposal rationales</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3 class="sec">Choose a plan</h3>
+    <div class="plans" id="plans"></div>
+
+    <h3 class="sec">Pay</h3>
+    <div class="pay">
+      <h4>Card or UPI, worldwide</h4>
+      <p class="note" style="margin-top:0">One Razorpay checkout takes UPI and international cards, so it works
+        inside and outside India.</p>
+      <div class="row" id="rzp-row"></div>
+
+      <h4 style="margin-top:26px">Or pay by UPI directly (India)</h4>
+      <p class="note" style="margin-top:0">Any UPI app &mdash; GPay, PhonePe, Paytm. On mobile, tap to open your app.</p>
+      <div class="upi" id="upi-open" title="Tap to copy">
+        <span id="upi-id"></span><span class="hint">tap to open app &rarr;</span>
+      </div>
+      <div id="qr"></div>
+
+      <label for="ref">Payment reference (UPI UTR or Razorpay payment ID)</label>
+      <input id="ref" placeholder="e.g. 4023xxxxxxx or pay_Qxxxxxxxxxxxxx">
+      <label for="email">Email (optional, to recognise you on this device)</label>
+      <input id="email" type="email" placeholder="you@company.com" autocomplete="email">
+      <div class="msg" id="msg"></div>
+      <div class="row">
+        <button class="btn" id="activate">I have paid &mdash; activate my subscription</button>
+      </div>
+      <p class="note">Activation is immediate and <b>provisional</b> until the reference is checked against the
+        payment account. Single-user licence, research use.</p>
+    </div>
+
+    <footer>
+      <p><b>Outside India?</b> Use the Razorpay checkout above &mdash; UPI alone will not work for you.</p>
+      <p style="margin-top:8px">Questions or a custom request: <a id="mailto" href="#">email support</a>.
+        Not affiliated with any company named in the accompanying research.</p>
+    </footer>
+  </div>
+
+  <script src="src/app/entitlements.js"></script>
+  <script>
+  (function () {
+    var ENT = window.TACP_ENT;
+    var selected = 'monthly';
+
+    function money(n) { return '\u20b9' + n.toLocaleString('en-IN'); }
+    function $(id) { return document.getElementById(id); }
+
+    function renderStatus() {
+      var s = ENT.state();
+      var el = $('status');
+      if (s.owner) { el.className = 'status ok'; el.textContent = 'Owner account \u2014 everything is unlocked.'; return; }
+      if (s.plan === 'operator') { el.className = 'status ok'; el.textContent = 'Operator plan active \u2014 renews in ' + s.daysLeft + ' day' + (s.daysLeft === 1 ? '' : 's') + '.'; return; }
+      if (s.trial) { el.className = 'status trial'; el.textContent = 'Free trial \u2014 ' + s.daysLeft + ' day' + (s.daysLeft === 1 ? '' : 's') + ' of Operator left on this device. Then the free tier continues.'; return; }
+      el.className = 'status'; el.textContent = 'Free tier. Everything on the left is open; the Operator features unlock on payment.';
+    }
+
+    function renderPlans() {
+      $('plans').innerHTML = ENT.PLANS.map(function (p) {
+        return '<div class="plan' + (p.id === selected ? ' sel' : '') + '" data-plan="' + p.id + '">' +
+          (p.badge ? '<span class="bd">' + p.badge + '</span>' : '') +
+          '<div class="nm">' + p.name + ' \u2014 ' + p.tag + '</div>' +
+          '<div class="pr">' + money(p.price) + ' <small>' + p.period + '</small></div>' +
+          '<div class="nt">' + p.note + '</div></div>';
+      }).join('');
+      Array.prototype.forEach.call($('plans').querySelectorAll('.plan'), function (el) {
+        el.onclick = function () { selected = el.dataset.plan; renderPlans(); renderPay(); };
+      });
+    }
+
+    function renderPay() {
+      var p = ENT.PLANS.filter(function (x) { return x.id === selected; })[0];
+      var url = ENT.subscribeUrl(selected);
+      var row = $('rzp-row');
+      if (url) {
+        row.innerHTML = '<a class="btn" href="' + url + '" target="_blank" rel="noopener">Pay ' + money(p.price) + ' by card or UPI (Razorpay) &rarr;</a>';
+      } else {
+        row.innerHTML = '<span class="btn ghost" aria-disabled="true">Razorpay link not configured yet</span>' +
+          '<span class="note" style="margin:0">Set <span class="mono">PAY.razorpay' + (selected === 'yearly' ? 'Yearly' : 'Monthly') +
+          '</span> in <span class="mono">src/app/entitlements.js</span> to your Razorpay Payment Link, or use UPI below.</span>';
+      }
+      var amt = p.price;
+      var upiLink = 'upi://pay?pa=' + encodeURIComponent(ENT.PAY.upi) + '&pn=' + encodeURIComponent('Saumyajit Ghosh') +
+        '&am=' + amt + '&cu=INR&tn=' + encodeURIComponent('TA Control Plane Operator ' + p.tag);
+      $('upi-open').onclick = function () { window.location.href = upiLink; };
+      $('upi-id').textContent = ENT.PAY.upi + '  \u00b7  ' + money(amt);
+    }
+
+    function activate() {
+      var ref = $('ref').value.trim();
+      var email = $('email').value.trim();
+      var msg = $('msg');
+      if (ref.length < 6) { msg.className = 'msg err'; msg.textContent = 'Enter the payment reference from your UPI app or Razorpay receipt.'; return; }
+      ENT.activate(selected, ref, email);
+      msg.className = 'msg ok';
+      msg.textContent = 'Activated on this device. Provisional until the reference is checked \u2014 thank you.';
+      renderStatus();
+    }
+
+    $('upi-id').textContent = ENT.PAY.upi;
+    $('mailto').href = 'mailto:' + ENT.PAY.supportEmail + '?subject=' + encodeURIComponent('TA Control Plane \u2014 Operator plan');
+    $('activate').onclick = activate;
+    renderStatus(); renderPlans(); renderPay();
+  })();
+  </script>
+</body>
+</html>
