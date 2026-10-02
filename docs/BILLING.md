@@ -49,11 +49,13 @@ same flow the asset-servicing project uses.
 account, so a UPI-only page simply excludes them. Razorpay takes **UPI and international
 cards in one checkout**, which is why it is the right single front door.
 
-**Path 1 — Razorpay Payment Link / Payment Page (no backend, works today).**
-Create a Payment Link in the Razorpay dashboard for each plan, then paste the URLs into
-`PAY.razorpayMonthly` / `PAY.razorpayYearly` in `src/app/entitlements.js`. The pricing page
-renders a pay button. The buyer returns and enters their Razorpay payment ID to activate.
-No server, no keys in the repo.
+**Path 1 — Razorpay payment page (no backend, configured today).**
+`PAY.razorpay` in `src/app/entitlements.js` points at `https://razorpay.me/@saumyajitghosh8959`.
+The pricing page renders a "Pay by card or UPI" button for either plan; the buyer returns and
+enters their Razorpay payment ID to activate. No server, no keys in the repo.
+
+If your page accepts `?amount=<rupees>` to pre-fill the amount, set
+`PAY.razorpayAmountParam = true`. Until then the button names the amount and the buyer enters it.
 
 **Path 2 — full checkout + signature verification (enforced).**
 Use `server/razorpay-verify.js` — a reference Cloudflare Worker (or Vercel/Netlify

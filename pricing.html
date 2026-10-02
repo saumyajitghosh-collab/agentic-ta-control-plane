@@ -185,11 +185,11 @@
       var url = ENT.subscribeUrl(selected);
       var row = $('rzp-row');
       if (url) {
-        row.innerHTML = '<a class="btn" href="' + url + '" target="_blank" rel="noopener">Pay ' + money(p.price) + ' by card or UPI (Razorpay) &rarr;</a>';
+        row.innerHTML = '<a class="btn" href="' + url + '" target="_blank" rel="noopener">Pay ' + money(p.price) + ' by card or UPI (Razorpay) &rarr;</a>' +
+          '<span class="note" style="margin:0">Opens the Razorpay payment page. Enter ' + money(p.price) + ' if it asks for an amount.</span>';
       } else {
-        row.innerHTML = '<span class="btn ghost" aria-disabled="true">Razorpay link not configured yet</span>' +
-          '<span class="note" style="margin:0">Set <span class="mono">PAY.razorpay' + (selected === 'yearly' ? 'Yearly' : 'Monthly') +
-          '</span> in <span class="mono">src/app/entitlements.js</span> to your Razorpay Payment Link, or use UPI below.</span>';
+        row.innerHTML = '<span class="btn ghost" aria-disabled="true">Razorpay not configured</span>' +
+          '<span class="note" style="margin:0">Set <span class="mono">PAY.razorpay</span> in <span class="mono">src/app/entitlements.js</span>, or use UPI below.</span>';
       }
       var amt = p.price;
       var upiLink = 'upi://pay?pa=' + encodeURIComponent(ENT.PAY.upi) + '&pn=' + encodeURIComponent('Saumyajit Ghosh') +

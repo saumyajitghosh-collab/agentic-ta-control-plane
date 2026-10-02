@@ -35,13 +35,12 @@
   ];
 
   // ---- payment endpoints ----
-  // Paste your Razorpay Payment Link / Payment Page URLs below. They take UPI AND
-  // international cards in one checkout, so one link covers India and everywhere else.
-  // Leave blank to fall back to the UPI + reference flow only.
+  // Razorpay payment page: one link takes UPI and cards, so it covers India and abroad.
+  // Set razorpayAmountParam to true only if your page accepts ?amount=<rupees> to pre-fill.
   var PAY = {
     upi: '9836296103@upi',
-    razorpayMonthly: '',   // e.g. 'https://rzp.io/l/tacp-monthly'
-    razorpayYearly: '',    // e.g. 'https://rzp.io/l/tacp-yearly'
+    razorpay: 'https://razorpay.me/@saumyajitghosh8959',
+    razorpayAmountParam: false,
     supportEmail: 'saumyajit.ghosh@gmail.com'
   };
 
@@ -122,9 +121,8 @@
 
   function subscribeUrl(planId) {
     var p = PLANS.filter(function (x) { return x.id === planId; })[0] || PLANS[0];
-    if (p.id === 'monthly') return PAY.razorpayMonthly || null;
-    if (p.id === 'yearly') return PAY.razorpayYearly || null;
-    return null;
+    if (!PAY.razorpay) return null;
+    return PAY.razorpay + (PAY.razorpayAmountParam ? '?amount=' + p.price : '');
   }
 
   // Activate locally from a payment reference. Provisional: this cannot verify the
