@@ -1,0 +1,14 @@
+{
+  "name": "agentic-ta-control-plane",
+  "version": "1.0.0",
+  "description": "Manager-owned data, decisions and automation across every transfer agent. Agents propose, a deterministic policy decides, every decision is evidence you can replay.",
+  "license": "MIT",
+  "author": "Saumyajit Ghosh",
+  "private": true,
+  "scripts": {
+    "test": "node --test tests/core.test.js",
+    "bundle": "node scripts/bundle.js",
+    "start": "python3 -m http.server 8080"
+  },
+  "engines": { "node": ">=18" }
+}
