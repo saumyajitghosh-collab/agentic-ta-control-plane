@@ -475,9 +475,23 @@
       '<h2>Regulatory watch</h2><div class="panel scroll-x"><p class="small">Illustrative circulars, mapped to the processes and capabilities they touch, with the autonomy each process runs at today.</p><table><thead><tr><th>Reference</th><th>Topic</th><th>Processes (autonomy)</th><th>Capabilities</th></tr></thead><tbody>' + circ + '</tbody></table></div>';
   }
 
+  function accountBlock() {
+    const s = ENT.state();
+    const auth = window.TACP_AUTH;
+    if (s.owner) {
+      const u = (auth && auth.session()) || {};
+      return '<p class="small">Signed in as <b>' + E(u.user || 'owner') + '</b> \u2014 owner. Every Operator feature is unlocked.</p>' +
+        '<div class="row">' + btn('Sign out of admin', 'admin-logout', {}) + '</div>';
+    }
+    const label = s.plan === 'operator' ? 'Operator plan' : s.trial ? 'Free trial' : 'Free tier';
+    return '<p class="small">' + E(label) + (s.daysLeft > 0 ? ' \u00b7 ' + s.daysLeft + ' days left' : '') + '</p>' +
+      '<div class="row"><a class="btn" href="pricing.html">See plans and pricing</a>' + btn('Admin sign in', 'admin-login', {}, 'btn-link') + '</div>';
+  }
+
   function viewSettings() {
     const r = state.reasoner;
     return '<div class="page-head"><h1>Settings</h1><p>The model is a replaceable dependency. Without one, every agent runs on deterministic reasoning and the whole product still works.</p></div>' +
+      '<div class="panel"><h3>Account</h3>' + accountBlock() + '</div>' +
       '<div class="panel"><h3>Reasoner</h3><div class="seg" role="group" aria-label="Reasoner"><button aria-pressed="' + (r.mode === 'deterministic') + '" data-act="reasoner" data-m="deterministic">Deterministic</button><button aria-pressed="' + (r.mode === 'claude') + '" data-act="reasoner" data-m="claude">Claude (your API key)</button></div>' +
       (r.mode === 'claude' ? '<div class="form-grid" style="margin-top:12px"><label class="field">Anthropic API key<input type="password" autocomplete="off" data-change="api-key" value="' + E(r.key) + '" placeholder="sk-ant-…"></label><label class="field">Model<input data-change="model" value="' + E(r.model) + '"></label></div>' +
         '<p class="small muted" style="margin-top:8px">The key stays in this browser tab’s memory and is sent only to api.anthropic.com. Claude writes the rationale and can disagree with the top candidate; it cannot choose capabilities, set parameters or authorise anything. The Ops workstation uses it; the Story always runs deterministically.</p>' + btn('Test connection', 'test-claude', {}) : '') + '</div>' +
@@ -614,6 +628,8 @@
     },
     'run-suite': () => { state.suite = A.runInjectionSuite(state.cp.ctx()); render(); },
     reasoner: (d) => { state.reasoner.mode = d.m; render(); },
+    'admin-login': () => { window.location.href = 'login.html'; },
+    'admin-logout': () => { window.TACP_AUTH.logout(); toast('Signed out of admin.'); render(); },
     'test-claude': async () => {
       if (!state.reasoner.key) { toast('Add an API key first.'); return; }
       try {

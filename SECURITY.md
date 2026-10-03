@@ -25,6 +25,18 @@ The site takes no card data and holds no payment secrets. There is no backend.
 - **Razorpay.** The static site only links to a Razorpay Payment Link/Page. The full checkout that verifies signatures lives in `server/razorpay-verify.js`, which reads `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` and `RAZORPAY_WEBHOOK_SECRET` from the environment. No key or secret is ever committed; if one appears in this repo, rotate it and remove it from history.
 - **The entitlement gate is client-side** (`src/app/entitlements.js`) and can be bypassed. It is a free/paid signal and a deterrent, not access control. Do not treat it as one.
 
+## Admin access
+
+There is one admin account (the owner). `src/app/auth.js` stores only a salt and a salted,
+iterated SHA-256 digest of the password — never the password itself. Sign in at `login.html`;
+the session unlocks every Operator feature permanently.
+
+This is a client-side gate on a static site. The digest is public, so the gate can be bypassed
+by anyone who sets the session key directly, and the digest could be brute-forced offline.
+What it does buy: the password is not in the repository and not on the page, and a strong
+password is impractical to reverse. Treat it as obfuscation, not access control. A
+server-verified login is the real fix.
+
 ## Controls the project demonstrates
 
 The security story of the product is its own subject matter: untrusted content (documents, emails, distributor files) can supply **facts** but never **authority**. Any action implied by text inside such content is proposed with `origin: UNTRUSTED_CONTENT` and refused by rule `R-UNTRUSTED-ORIGIN`, regardless of what a detector noticed. See [`docs/CONTROLS.md`](docs/CONTROLS.md) and the Trust boundary screen.

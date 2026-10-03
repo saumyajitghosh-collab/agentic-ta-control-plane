@@ -70,6 +70,8 @@ Pay by **UPI** in India, or **Razorpay** — one checkout that takes UPI and int
 
 The gate is client-side: it makes the free/paid line explicit and filters casual users, but it is not a security boundary. Payment cannot be verified without a server. See [docs/BILLING.md](docs/BILLING.md) for the Razorpay path that does it properly, and `server/razorpay-verify.js` for the reference backend.
 
+The single owner/admin account signs in at [`login.html`](login.html). See [SECURITY.md](SECURITY.md) for exactly what that gate does and does not protect.
+
 ## The policy model
 
 Every proposed action passes one policy function:

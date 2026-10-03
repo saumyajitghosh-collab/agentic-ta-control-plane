@@ -19,7 +19,6 @@
 
   var DAY = 86400000;
   var TRIAL_DAYS = 30;
-  var OWNER_EMAIL = 'saumyajit.ghosh@gmail.com';
 
   var K = {
     did: 'tacp_did', anc: 'tacp_anc', paid: 'tacp_paid_until',
@@ -86,12 +85,13 @@
 
   function state() {
     var now = Date.now();
+    var authOwner = !!(g.TACP_AUTH && g.TACP_AUTH.isOwner && g.TACP_AUTH.isOwner());
     var paidUntil = parseInt(ls(K.paid, '0'), 10) || 0;
     var ses = session();
     var acct = ses && ses.uid ? users()[ses.uid] : null;
     var plan = 'free', entitled = false, daysLeft = 0, trial = false, owner = false;
 
-    if (acct && acct.plan === 'owner') {
+    if (authOwner) {
       entitled = true; owner = true; plan = 'owner'; daysLeft = -1;
     } else {
       var until = Math.max((acct && acct.planExpires) || 0, paidUntil);
@@ -132,12 +132,11 @@
     var now = Date.now();
     var uid = (email || 'local').toLowerCase();
     var us = users();
-    us[uid] = { uid: uid, email: email || '', plan: (email || '').toLowerCase() === OWNER_EMAIL ? 'owner' : 'operator',
-      planExpires: (email || '').toLowerCase() === OWNER_EMAIL ? 4102444800000 : now + p.days * DAY,
+    us[uid] = { uid: uid, email: email || '', plan: 'operator', planExpires: now + p.days * DAY,
       reference: reference || '', activatedAt: now };
     ls(K.users, JSON.stringify(us));
     ls(K.session, JSON.stringify({ uid: uid, sessionExpires: now + 400 * DAY }));
-    if (us[uid].plan === 'operator') ls(K.paid, String(now + p.days * DAY));
+    ls(K.paid, String(now + p.days * DAY));
     return state();
   }
 
@@ -145,7 +144,7 @@
   function reset() { [K.did, K.anc, K.paid, K.users, K.session].forEach(function (k) { try { localStorage.removeItem(k); } catch (e) {} }); }
 
   g.TACP_ENT = {
-    TRIAL_DAYS: TRIAL_DAYS, PLANS: PLANS, PAY: PAY, OWNER_EMAIL: OWNER_EMAIL,
+    TRIAL_DAYS: TRIAL_DAYS, PLANS: PLANS, PAY: PAY,
     state: state, gate: gate, entitled: function () { return state().entitled; },
     isPremiumAction: isPremiumAction, isPremiumChange: isPremiumChange,
     subscribeUrl: subscribeUrl, activate: activate, signOut: signOut, reset: reset,

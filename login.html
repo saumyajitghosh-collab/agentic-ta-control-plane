@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in — Agentic TA Control Plane</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#0f1726">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%82%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--ink:#14213d;--ink-2:#4a5568;--ink-3:#718096;--rule:#d9dee5;--agent:#2f5bd3;--agent-tint:#e8eefc;
+      --auth:#1f7a5c;--auth-tint:#e3f2ec;--dark:#0f1726;--sans:'IBM Plex Sans','Segoe UI',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--sans);background:var(--dark);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;-webkit-font-smoothing:antialiased}
+    .card{width:100%;max-width:420px;background:#fff;border-radius:14px;padding:32px 30px 26px;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+    .brand{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+    .mark{width:38px;height:38px;border-radius:10px;background:var(--dark);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .brand b{font-size:15.5px;display:block;line-height:1.2}
+    .brand span{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+    h1{font-size:20px;margin-bottom:4px}
+    .sub{font-size:13.5px;color:var(--ink-3);margin-bottom:20px}
+    label{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin:14px 0 6px}
+    input{width:100%;border:1px solid var(--rule);border-radius:9px;padding:11px 13px;font-family:var(--sans);font-size:15px;background:#fff;color:var(--ink)}
+    input:focus{outline:none;border-color:var(--agent);box-shadow:0 0 0 3px var(--agent-tint)}
+    .btn{width:100%;border:0;border-radius:9px;padding:12px;font-family:var(--sans);font-size:15px;font-weight:600;cursor:pointer;background:var(--agent);color:#fff;margin-top:20px}
+    .btn:hover{filter:brightness(1.06)}
+    .msg{margin-top:14px;padding:11px 14px;border-radius:8px;font-size:13.5px;display:none}
+    .msg.err{display:block;background:#f8e4e4;border:1px solid #e6b3b3;color:#8f2f2f}
+    .msg.ok{display:block;background:var(--auth-tint);border:1px solid #b7ddc9;color:#175c46}
+    .who{margin-top:16px;padding:12px 14px;border:1px solid var(--rule);border-radius:9px;font-size:13.5px;color:var(--ink-2)}
+    .foot{margin-top:22px;padding-top:16px;border-top:1px solid var(--rule);font-size:12.5px;color:var(--ink-3);line-height:1.7}
+    a{color:var(--agent)}
+    .warn{margin-top:16px;font-size:12px;color:var(--ink-3);background:#f6f8fa;border:1px solid var(--rule);border-radius:8px;padding:10px 12px;line-height:1.6}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="brand">
+      <div class="mark">🛂</div>
+      <div><b>TA Control Plane</b><span>Admin access</span></div>
+    </div>
+
+    <h1>Sign in</h1>
+    <p class="sub">Owner account. This unlocks every Operator feature, permanently.</p>
+
+    <form id="form" autocomplete="off">
+      <label for="user">User ID</label>
+      <input id="user" name="user" autocomplete="off" spellcheck="false" autofocus>
+      <label for="pass">Password</label>
+      <input id="pass" name="pass" type="password" autocomplete="off">
+      <div class="msg" id="msg"></div>
+      <button class="btn" type="submit">Sign in</button>
+    </form>
+
+    <div id="who" class="who" style="display:none"></div>
+
+    <p class="warn"><b>Note.</b> This page runs in your browser, so the gate is a deterrent,
+      not a lock: anyone who reads the source can bypass it. Your password itself is not in
+      the repository and not on this page. A server-verified gate is the real fix —
+      see <span style="font-family:var(--mono)">docs/BILLING.md</span>.</p>
+
+    <div class="foot">
+      Not an admin? <a href="pricing.html">See plans and pricing</a> · <a href="index.html">Back to the demo</a>
+    </div>
+  </div>
+
+  <script src="src/core/util.js"></script>
+  <script src="src/app/auth.js"></script>
+  <script src="src/app/entitlements.js"></script>
+  <script>
+  (function () {
+    var A = window.TACP_AUTH;
+    var $ = function (id) { return document.getElementById(id); };
+
+    function showSignedIn() {
+      $('form').style.display = 'none';
+      $('who').style.display = 'block';
+      $('who').innerHTML = 'Signed in as <b>' + A.session().user + '</b> (owner). ' +
+        'Everything is unlocked. <a href="index.html">Open the app →</a> · ' +
+        '<a href="#" id="out">Sign out</a>';
+      $('out').onclick = function (e) { e.preventDefault(); A.logout(); location.reload(); };
+    }
+
+    if (A.isOwner()) showSignedIn();
+
+    $('form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var u = $('user').value, p = $('pass').value;
+      var msg = $('msg');
+      if (A.login(u, p)) {
+        msg.className = 'msg ok';
+        msg.textContent = 'Signed in. Opening the app…';
+        setTimeout(function () { location.href = 'index.html'; }, 600);
+      } else {
+        msg.className = 'msg err';
+        msg.textContent = 'That user ID and password do not match.';
+        $('pass').value = '';
+        $('pass').focus();
+      }
+    });
+  })();
+  </script>
+</body>
+</html>
